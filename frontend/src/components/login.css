@@ -1,0 +1,104 @@
+/* Import a nice font for the 'Wedding' feel */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500&display=swap');
+
+/* The Main Page Background */
+.login-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* PASTE YOUR COPIED IMAGE LINK INSIDE THE QUOTES BELOW */
+  background-image: url('https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/7929513/hearts-background-clipart-md.png');
+  
+  /* This makes the image cover the whole screen without repeating */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  /* Optional: Adds a soft pink tint over the image to make text easier to read */
+  background-blend-mode: overlay;
+  background-color: rgba(255, 255, 255, 0.3); 
+}
+
+
+
+/* The Login Box */
+.login-card {
+  background: rgba(255, 255, 255, 0.95); /* Slightly see-through white */
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  
+  /* Soft luxury shadow */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  
+  /* Glassmorphism blur */
+  backdrop-filter: blur(8px);
+  text-align: center;
+}
+
+/* Typography */
+.login-card h2 {
+  font-family: 'Playfair Display', serif; /* Elegant font */
+  font-size: 2rem;
+  color: #f596b0;
+  margin-bottom: 1.5rem;
+}
+
+/* Inputs */
+.form-group {
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+}
+
+.form-group input:focus {
+  border-color: #ff99ac; /* Pink border when clicking */
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 153, 172, 0.1);
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  background-color: #f596b0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.login-btn:hover {
+  background-color: #f2acbf;
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+}
