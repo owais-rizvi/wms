@@ -1,4 +1,3 @@
-// src/modules/weddingMembers/weddingMember.model.js
 import mongoose from "mongoose";
 
 const weddingMemberSchema = new mongoose.Schema(
