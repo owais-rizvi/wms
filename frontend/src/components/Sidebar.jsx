@@ -57,10 +57,6 @@ function Sidebar(){
                     <li>Expenses</li>
                 </Link>
 
-                <Link to="/roles">
-                    <li>Roles</li>
-                </Link>
-
                 {/* Added a small link to go back to the selector page */}
                 <div style={{ marginTop: '20px', paddingLeft: '10px' }}>
                     <Link to="/weddings" style={{ fontSize: '0.8rem', color: '#999', textDecoration: 'none' }}>

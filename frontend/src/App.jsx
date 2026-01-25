@@ -14,7 +14,6 @@ import Guests from './pages/Guests.jsx';
 import Events from './pages/Events.jsx';
 import Vendors from './pages/Vendors.jsx';
 import Expenses from './pages/Expenses.jsx';
-import Roles from './pages/roles.jsx';
 
 function App() {
   return (
@@ -36,7 +35,6 @@ function App() {
            <Route path="/events" element={<Events />} />
            <Route path="/vendors" element={<Vendors />} />
            <Route path="/expenses" element={<Expenses />} />
-           <Route path="/roles" element={<Roles />} />
         </Route>
 
       </Routes>

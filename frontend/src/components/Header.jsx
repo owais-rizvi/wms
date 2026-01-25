@@ -1,7 +1,7 @@
 function Header(){
     return(
         <div className="Header">
-            <h1> WMS </h1>
+            <h1> Unionly </h1>
             
         </div>
     );

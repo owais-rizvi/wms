@@ -2,29 +2,30 @@ import mongoose from "mongoose";
 
 const vendorSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    contact: String,
+    email: String,
+    cost: {
+      type: Number,
+      default: 0,
+    },
+    status: {
+      type: String,
+      enum: ["contacted", "booked", "paid"],
+      default: "contacted",
+    },
     weddingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Wedding",
-      required: true
+      required: true,
     },
-    name: { type: String, required: true },
-    serviceType: {
-      type: String,
-      enum: ["catering", "photography", "decor", "music", "transport"],
-      required: true
-    },
-    contactPhone: String,
-    contactEmail: String,
-    linkedUserId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "partial", "paid"],
-      default: "pending"
-    }
   },
   { timestamps: true }
 );

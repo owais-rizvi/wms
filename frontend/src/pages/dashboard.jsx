@@ -31,25 +31,35 @@ function Dashboard() {
             const weddingId = wedding._id || wedding.id;
 
             try {
-                // Fetch wedding details with cookies
-                const response = await fetch(`http://localhost:3000/api/weddings/${weddingId}`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
+                // Fetch wedding details and stats
+                const [weddingRes, guestsRes, eventsRes, vendorsRes, expensesRes] = await Promise.all([
+                    fetch(`http://localhost:3000/api/weddings/${weddingId}`, { credentials: 'include' }),
+                    fetch(`http://localhost:3000/api/weddings/${weddingId}/guests`, { credentials: 'include' }),
+                    fetch(`http://localhost:3000/api/weddings/${weddingId}/events`, { credentials: 'include' }),
+                    fetch(`http://localhost:3000/api/weddings/${weddingId}/vendors`, { credentials: 'include' }),
+                    fetch(`http://localhost:3000/api/weddings/${weddingId}/expenses`, { credentials: 'include' })
+                ]);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    // For now, just show basic wedding info
-                    // You can expand this when you add guests, budget, etc.
+                if (weddingRes.ok && guestsRes.ok && eventsRes.ok && vendorsRes.ok && expensesRes.ok) {
+                    const guests = await guestsRes.json();
+                    const events = await eventsRes.json();
+                    const vendors = await vendorsRes.json();
+                    const expenses = await expensesRes.json();
+                    
+                    const confirmedGuests = guests.filter(g => g.rsvpStatus === 'confirmed').length;
+                    const pendingTasks = events.filter(e => e.status === 'pending').length;
+                    const bookedVendors = vendors.filter(v => v.status === 'booked' || v.status === 'paid').length;
+                    const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                    
                     setStats({
-                        guestsTotal: 0,
-                        guestsConfirmed: 0,
-                        budgetTotal: 0,
-                        budgetSpent: 0,
-                        tasksPending: 0,
-                        vendorsHired: 0
+                        guestsTotal: guests.length,
+                        guestsConfirmed: confirmedGuests,
+                        budgetTotal: 50000, // Make this configurable later
+                        budgetSpent: totalSpent,
+                        tasksPending: pendingTasks,
+                        vendorsHired: bookedVendors
                     });
-                } else if (response.status === 401) {
+                } else if (weddingRes.status === 401) {
                     navigate('/login');
                     return;
                 } else {

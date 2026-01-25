@@ -52,7 +52,7 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>WMS</h2>
+        <h2>Unionly</h2>
         
         {/* Error Message Display */}
         {error && <div style={{ color: 'red', marginBottom: '10px', fontSize: '0.9rem' }}>{error}</div>}

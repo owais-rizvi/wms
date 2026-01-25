@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
 
-const eventSchema = new mongoose.Schema(
+const expenseSchema = new mongoose.Schema(
   {
-    title: {
+    category: {
       type: String,
       required: true,
     },
     description: String,
-    date: Date,
-    time: String,
-    location: String,
-    status: {
-      type: String,
-      enum: ["pending", "completed"],
-      default: "pending",
+    amount: {
+      type: Number,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
     },
     weddingId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,4 +24,4 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Event", eventSchema);
+export default mongoose.model("Expense", expenseSchema);

@@ -1,236 +1,181 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiCall } from '../utils/api.js';
 
 function Guests() {
     const navigate = useNavigate();
-    
-    // --- STATE ---
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showModal, setShowModal] = useState(false);
-    
-    // Form State for Adding Guest
+    const [error, setError] = useState('');
+    const [showForm, setShowForm] = useState(false);
     const [newGuest, setNewGuest] = useState({
         name: '',
         email: '',
-        group: 'Friend',
-        rsvp: 'Pending'
+        phone: '',
+        plusOne: false
     });
 
-    // --- 1. FETCH GUESTS ---
-    const fetchGuests = async () => {
-        const token = localStorage.getItem('jwt');
-        const savedWedding = localStorage.getItem("activeWedding");
-
-        if (!token || !savedWedding) {
-            navigate('/login');
-            return;
+    const getWeddingId = () => {
+        const savedWedding = localStorage.getItem('activeWedding');
+        if (!savedWedding) {
+            navigate('/weddings');
+            return null;
         }
-        
-        const weddingId = JSON.parse(savedWedding).id;
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/guests/${weddingId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                setGuests(data);
-            }
-        } catch (error) {
-            console.error("Failed to load guests", error);
-        } finally {
-            setLoading(false);
-        }
+        const wedding = JSON.parse(savedWedding);
+        return wedding._id || wedding.id;
     };
 
     useEffect(() => {
         fetchGuests();
     }, []);
 
-    // --- 2. ADD GUEST ---
+    const fetchGuests = async () => {
+        const weddingId = getWeddingId();
+        if (!weddingId) return;
+
+        try {
+            const data = await apiCall(`/weddings/${weddingId}/guests`);
+            setGuests(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleAddGuest = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('jwt');
-        const wedding = JSON.parse(localStorage.getItem("activeWedding"));
+        const weddingId = getWeddingId();
+        if (!weddingId) return;
 
         try {
-            const response = await fetch('http://localhost:3000/api/guests', {
+            const guest = await apiCall(`/weddings/${weddingId}/guests`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    ...newGuest,
-                    weddingId: wedding.id // Link guest to this specific wedding
-                })
+                body: JSON.stringify(newGuest)
             });
-
-            if (response.ok) {
-                setShowModal(false); // Close popup
-                setNewGuest({ name: '', email: '', group: 'Friend', rsvp: 'Pending' }); // Reset form
-                fetchGuests(); // Refresh list
-            }
-        } catch (error) {
-            alert("Error adding guest");
+            setGuests([...guests, guest]);
+            setNewGuest({ name: '', email: '', phone: '', plusOne: false });
+            setShowForm(false);
+        } catch (err) {
+            setError(err.message);
         }
     };
 
-    // --- 3. DELETE GUEST ---
-    const handleDelete = async (guestId) => {
-        if(!confirm("Are you sure you want to remove this guest?")) return;
+    const updateRSVP = async (guestId, status) => {
+        const weddingId = getWeddingId();
+        if (!weddingId) return;
 
-        const token = localStorage.getItem('jwt');
         try {
-            await fetch(`http://localhost:3000/api/guests/${guestId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+            const updatedGuest = await apiCall(`/weddings/${weddingId}/guests/${guestId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ rsvpStatus: status })
             });
-            // Remove from UI immediately without refreshing
-            setGuests(guests.filter(g => g.id !== guestId));
-        } catch (error) {
-            alert("Error deleting guest");
+            setGuests(guests.map(g => g._id === guestId ? updatedGuest : g));
+        } catch (err) {
+            setError(err.message);
         }
     };
 
-    // --- 4. UPDATE RSVP INSTANTLY ---
-    const handleStatusChange = async (guestId, newStatus) => {
-        // Optimistic UI Update: Update screen immediately before server responds
-        const updatedList = guests.map(g => 
-            g.id === guestId ? { ...g, rsvp: newStatus } : g
-        );
-        setGuests(updatedList);
+    const deleteGuest = async (guestId) => {
+        const weddingId = getWeddingId();
+        if (!weddingId) return;
 
-        const token = localStorage.getItem('jwt');
         try {
-            await fetch(`http://localhost:3000/api/guests/${guestId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ rsvp: newStatus })
+            await apiCall(`/weddings/${weddingId}/guests/${guestId}`, {
+                method: 'DELETE'
             });
-        } catch (error) {
-            console.error("Failed to update status");
-            fetchGuests(); // Revert if failed
+            setGuests(guests.filter(g => g._id !== guestId));
+        } catch (err) {
+            setError(err.message);
         }
     };
+
+    if (loading) return <div>Loading guests...</div>;
+
+    const confirmedCount = guests.filter(g => g.rsvpStatus === 'confirmed').length;
+    const totalCount = guests.length;
 
     return (
         <div className="page-container">
-            <div className="page-header">
-                <h2>Guest List ({guests.length})</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h1>Guests ({confirmedCount}/{totalCount} confirmed)</h1>
                 <button 
-                    onClick={() => setShowModal(true)}
-                    className="btn-primary" 
-                    style={{ padding: '10px 20px', background: 'black', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                    onClick={() => setShowForm(!showForm)}
+                    style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px' }}
                 >
-                    + Add Guest
+                    {showForm ? 'Cancel' : 'Add Guest'}
                 </button>
             </div>
 
-            {loading ? <p>Loading guests...</p> : (
-                <table className="standard-table">
-                    <thead>
-                        <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
-                            <th style={{ padding: '10px' }}>Name</th>
-                            <th style={{ padding: '10px' }}>Email</th>
-                            <th style={{ padding: '10px' }}>Group</th>
-                            <th style={{ padding: '10px' }}>RSVP</th>
-                            <th style={{ padding: '10px' }}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {guests.map((guest) => (
-                            <tr key={guest.id} style={{ borderBottom: '1px solid #eee' }}>
-                                <td style={{ padding: '10px' }}>{guest.name}</td>
-                                <td style={{ padding: '10px', color: '#666' }}>{guest.email}</td>
-                                <td style={{ padding: '10px' }}>{guest.group}</td>
-                                <td style={{ padding: '10px' }}>
-                                    {/* DROPDOWN FOR RSVP */}
-                                    <select 
-                                        value={guest.rsvp}
-                                        onChange={(e) => handleStatusChange(guest.id, e.target.value)}
-                                        style={{ 
-                                            padding: '5px', 
-                                            borderRadius: '4px',
-                                            border: '1px solid #ddd',
-                                            fontWeight: 'bold',
-                                            color: guest.rsvp === 'Confirmed' ? 'green' : guest.rsvp === 'Declined' ? 'red' : 'orange'
-                                        }}
-                                    >
-                                        <option value="Pending">Pending</option>
-                                        <option value="Confirmed">Confirmed</option>
-                                        <option value="Declined">Declined</option>
-                                    </select>
-                                </td>
-                                <td style={{ padding: '10px' }}>
-                                    <button 
-                                        onClick={() => handleDelete(guest.id)}
-                                        style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 'bold' }}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+            {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
 
-            {/* --- ADD GUEST MODAL (Popup) --- */}
-            {showModal && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center'
-                }}>
-                    <div style={{ background: 'white', padding: '30px', borderRadius: '10px', width: '400px' }}>
-                        <h3>Add New Guest</h3>
-                        <form onSubmit={handleAddGuest} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
-                            <input 
-                                type="text" placeholder="Full Name" required 
-                                value={newGuest.name}
-                                onChange={e => setNewGuest({...newGuest, name: e.target.value})}
-                                style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
+            {showForm && (
+                <form onSubmit={handleAddGuest} style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                        <input
+                            type="text"
+                            placeholder="Guest Name"
+                            value={newGuest.name}
+                            onChange={(e) => setNewGuest({...newGuest, name: e.target.value})}
+                            required
+                        />
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={newGuest.email}
+                            onChange={(e) => setNewGuest({...newGuest, email: e.target.value})}
+                        />
+                        <input
+                            type="tel"
+                            placeholder="Phone"
+                            value={newGuest.phone}
+                            onChange={(e) => setNewGuest({...newGuest, phone: e.target.value})}
+                        />
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={newGuest.plusOne}
+                                onChange={(e) => setNewGuest({...newGuest, plusOne: e.target.checked})}
                             />
-                            <input 
-                                type="email" placeholder="Email Address" 
-                                value={newGuest.email}
-                                onChange={e => setNewGuest({...newGuest, email: e.target.value})}
-                                style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
-                            />
-                            <select 
-                                value={newGuest.group}
-                                onChange={e => setNewGuest({...newGuest, group: e.target.value})}
-                                style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
-                            >
-                                <option value="Bride's Family">Bride's Family</option>
-                                <option value="Groom's Family">Groom's Family</option>
-                                <option value="Bride's Friend">Bride's Friend</option>
-                                <option value="Groom's Friend">Groom's Friend</option>
-                                <option value="Work">Work</option>
-                            </select>
-                            <select 
-                                value={newGuest.rsvp}
-                                onChange={e => setNewGuest({...newGuest, rsvp: e.target.value})}
-                                style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}
-                            >
-                                <option value="Pending">Pending</option>
-                                <option value="Confirmed">Confirmed</option>
-                                <option value="Declined">Declined</option>
-                            </select>
-
-                            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                <button type="submit" style={{ flex: 1, padding: '10px', background: 'black', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Save Guest</button>
-                                <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: '10px', background: '#ccc', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Cancel</button>
-                            </div>
-                        </form>
+                            Plus One
+                        </label>
                     </div>
-                </div>
+                    <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px' }}>
+                        Add Guest
+                    </button>
+                </form>
             )}
+
+            <div style={{ display: 'grid', gap: '10px' }}>
+                {guests.map(guest => (
+                    <div key={guest._id} style={{ padding: '15px', border: '1px solid #ddd', borderRadius: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <strong>{guest.name}</strong>
+                            {guest.plusOne && <span style={{ marginLeft: '10px', fontSize: '0.8rem', color: '#666' }}>+1</span>}
+                            <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                                {guest.email} {guest.phone && `• ${guest.phone}`}
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <select 
+                                value={guest.rsvpStatus} 
+                                onChange={(e) => updateRSVP(guest._id, e.target.value)}
+                                style={{ padding: '5px' }}
+                            >
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="declined">Declined</option>
+                            </select>
+                            <button 
+                                onClick={() => deleteGuest(guest._id)}
+                                style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
