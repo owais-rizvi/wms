@@ -1,38 +1,69 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './Login.css'; // <--- REUSING YOUR EXISTING CSS
+import './Login.css';
 
 function Signup() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
+  
+  // New states for API handling
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    
+    setError(''); // Clear previous errors
+
+    // 1. Client-side validation
     if (password !== confirmPass) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
 
-    console.log("Creating account for:", fullName);
-    // Future: Add backend registration logic here
-    navigate('/'); 
+    setLoading(true);
+
+    try {
+      // 2. Call the Backend
+      const response = await fetch('http://localhost:5000/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // We map 'fullName' to 'name' because that is what servers usually expect
+        body: JSON.stringify({ name: fullName, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Signup successful");
+        navigate('/login');
+      } else {
+        // Show error from backend (e.g., "Email already in use")
+        setError(data.message || 'Signup failed');
+      }
+    } catch (err) {
+      console.error("Network Error:", err);
+      setError('Server error. Is your backend running on port 5000?');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="login-container">
-      {/* Reusing 'login-card' class makes it look identical */}
       <div className="login-card">
         <h2>Create Account</h2>
         
+        {/* Error Message Display */}
+        {error && <div style={{ color: 'red', marginBottom: '10px', fontSize: '0.9rem' }}>{error}</div>}
+
         <form onSubmit={handleSignup}>
           
-          {/* New Field: Full Name */}
           <div className="form-group">
-            <label>Full Name</label>
+            <label>First Name</label>
             <input 
               type="text" 
               value={fullName}
@@ -64,7 +95,6 @@ function Signup() {
             />
           </div>
 
-          {/* New Field: Confirm Password */}
           <div className="form-group">
             <label>Confirm Password</label>
             <input 
@@ -76,11 +106,10 @@ function Signup() {
             />
           </div>
 
-          <button type="submit" className="login-btn">
-            Sign Up
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
 
-          {/* Link to switch back to Login */}
           <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
             Already have an account? <Link to="/login" style={{ color: 'black', fontWeight: 'bold' }}>Log in</Link>
           </p>
