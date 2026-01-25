@@ -19,7 +19,7 @@ function Guests() {
 
     // --- 1. FETCH GUESTS ---
     const fetchGuests = async () => {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('jwt');
         const savedWedding = localStorage.getItem("activeWedding");
 
         if (!token || !savedWedding) {
@@ -30,7 +30,7 @@ function Guests() {
         const weddingId = JSON.parse(savedWedding).id;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/guests/${weddingId}`, {
+            const response = await fetch(`http://localhost:3000/api/guests/${weddingId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
@@ -52,11 +52,11 @@ function Guests() {
     // --- 2. ADD GUEST ---
     const handleAddGuest = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('jwt');
         const wedding = JSON.parse(localStorage.getItem("activeWedding"));
 
         try {
-            const response = await fetch('http://localhost:5000/api/guests', {
+            const response = await fetch('http://localhost:3000/api/guests', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,9 +82,9 @@ function Guests() {
     const handleDelete = async (guestId) => {
         if(!confirm("Are you sure you want to remove this guest?")) return;
 
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('jwt');
         try {
-            await fetch(`http://localhost:5000/api/guests/${guestId}`, {
+            await fetch(`http://localhost:3000/api/guests/${guestId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -103,9 +103,9 @@ function Guests() {
         );
         setGuests(updatedList);
 
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('jwt');
         try {
-            await fetch(`http://localhost:5000/api/guests/${guestId}`, {
+            await fetch(`http://localhost:3000/api/guests/${guestId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

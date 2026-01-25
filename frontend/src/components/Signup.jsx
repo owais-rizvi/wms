@@ -28,10 +28,10 @@ function Signup() {
 
     try {
       // 2. Call the Backend
-      const response = await fetch('http://localhost:5000/api/signup', {
+      const response = await fetch('http://localhost:3000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // We map 'fullName' to 'name' because that is what servers usually expect
+        credentials: 'include',
         body: JSON.stringify({ name: fullName, email, password }),
       });
 
@@ -46,7 +46,7 @@ function Signup() {
       }
     } catch (err) {
       console.error("Network Error:", err);
-      setError('Server error. Is your backend running on port 5000?');
+      setError('Server error. Is your backend running on port 3000?');
     } finally {
       setLoading(false);
     }
@@ -63,12 +63,12 @@ function Signup() {
         <form onSubmit={handleSignup}>
           
           <div className="form-group">
-            <label>First Name</label>
+            <label>Name</label>
             <input 
               type="text" 
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Sarah & John"
+              placeholder="John Doe"
               required 
             />
           </div>
@@ -79,7 +79,7 @@ function Signup() {
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="sarah@example.com"
+              placeholder="johndoe@example.com"
               required 
             />
           </div>

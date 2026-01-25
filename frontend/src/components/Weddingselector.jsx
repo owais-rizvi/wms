@@ -8,7 +8,7 @@ function WeddingSelector() {
     // --- State ---
     const [weddings, setWeddings] = useState([]);
     const [isCreating, setIsCreating] = useState(false);
-    const [newWedding, setNewWedding] = useState({ names: '', date: '' });
+    const [newWedding, setNewWedding] = useState({ title: '', startDate: '' });
     
     // UI State
     const [loading, setLoading] = useState(true);
@@ -17,25 +17,19 @@ function WeddingSelector() {
     // --- 1. Load Weddings from Backend on Startup ---
     useEffect(() => {
         const fetchWeddings = async () => {
-            const token = localStorage.getItem('authToken');
-            
-            // If not logged in, go back to login
-            if (!token) {
-                navigate('/login');
-                return;
-            }
-
             try {
-                // Call House #2 (Backend)
-                const response = await fetch('http://localhost:5000/api/weddings', {
-                    headers: {
-                        'Authorization': `Bearer ${token}` // Show our ID card
-                    }
+                // Call Backend with cookies
+                const response = await fetch('http://localhost:3000/api/weddings', {
+                    credentials: 'include' // Send cookies
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     setWeddings(data);
+                } else if (response.status === 401) {
+                    // Not authenticated, redirect to login
+                    navigate('/login');
+                    return;
                 } else {
                     setError('Failed to load weddings.');
                 }
@@ -61,16 +55,14 @@ function WeddingSelector() {
     const handleCreate = async (e) => {
         e.preventDefault();
         setError('');
-        
-        const token = localStorage.getItem('authToken');
 
         try {
-            const response = await fetch('http://localhost:5000/api/weddings', {
+            const response = await fetch('http://localhost:3000/api/weddings', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Send cookies
                 body: JSON.stringify(newWedding) // Send names & date
             });
 
@@ -112,8 +104,8 @@ function WeddingSelector() {
                                 <input 
                                     type="text" 
                                     placeholder="Sarah & John" 
-                                    value={newWedding.names} 
-                                    onChange={(e) => setNewWedding({...newWedding, names: e.target.value})} 
+                                    value={newWedding.title} 
+                                    onChange={(e) => setNewWedding({...newWedding, title: e.target.value})} 
                                     required 
                                 />
                             </div>
@@ -121,8 +113,8 @@ function WeddingSelector() {
                                 <label>Wedding Date</label>
                                 <input 
                                     type="date" 
-                                    value={newWedding.date} 
-                                    onChange={(e) => setNewWedding({...newWedding, date: e.target.value})} 
+                                    value={newWedding.startDate} 
+                                    onChange={(e) => setNewWedding({...newWedding, startDate: e.target.value})} 
                                     required 
                                 />
                             </div>
@@ -147,14 +139,13 @@ function WeddingSelector() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '20px 0' }}>
                             {weddings.map(w => (
                                 <button 
-                                    key={w.id} // Assuming backend sends 'id' or '_id'
+                                    key={w._id || w.id} // Use MongoDB _id or fallback to id
                                     onClick={() => handleSelectWedding(w)} 
                                     style={{ padding: '15px', border: '1px solid #ddd', background: 'white', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', transition: '0.2s' }}
                                 >
-                                    <strong>{w.names}</strong> <br/>
+                                    <strong>{w.title}</strong> <br/>
                                     <span style={{ fontSize: '0.85rem', color: '#666' }}>
-                                        {/* Format date nicely if possible, or just show raw string */}
-                                        {new Date(w.date).toLocaleDateString()}
+                                        {w.startDate ? new Date(w.startDate).toLocaleDateString() : 'No date set'}
                                     </span>
                                 </button>
                             ))}

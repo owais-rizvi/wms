@@ -14,7 +14,7 @@ import Guests from './pages/Guests.jsx';
 import Events from './pages/Events.jsx';
 import Vendors from './pages/Vendors.jsx';
 import Expenses from './pages/Expenses.jsx';
-import Roles from './pages/Roles.jsx';
+import Roles from './pages/roles.jsx';
 
 function App() {
   return (

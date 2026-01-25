@@ -19,31 +19,39 @@ function Dashboard() {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
-            // Get credentials
-            const token = localStorage.getItem('authToken');
+            // Get saved wedding
             const savedWedding = localStorage.getItem("activeWedding");
 
-            if (!token || !savedWedding) {
-                navigate('/login');
+            if (!savedWedding) {
+                navigate('/weddings');
                 return;
             }
 
             const wedding = JSON.parse(savedWedding);
+            const weddingId = wedding._id || wedding.id;
 
             try {
-                // 2. Fetch the Summary from the Backend
-                // The Backend must calculate these numbers from the Guests, Expenses, Events, and Vendors tables.
-                const response = await fetch(`http://localhost:5000/api/dashboard/${wedding.id}`, {
+                // Fetch wedding details with cookies
+                const response = await fetch(`http://localhost:3000/api/weddings/${weddingId}`, {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+                    credentials: 'include'
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setStats(data); // Update state with real numbers
+                    // For now, just show basic wedding info
+                    // You can expand this when you add guests, budget, etc.
+                    setStats({
+                        guestsTotal: 0,
+                        guestsConfirmed: 0,
+                        budgetTotal: 0,
+                        budgetSpent: 0,
+                        tasksPending: 0,
+                        vendorsHired: 0
+                    });
+                } else if (response.status === 401) {
+                    navigate('/login');
+                    return;
                 } else {
                     setError("Failed to load dashboard data");
                 }

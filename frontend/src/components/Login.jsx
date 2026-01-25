@@ -19,9 +19,10 @@ function Login() {
 
     try {
       // 1. Call the Backend
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -29,9 +30,6 @@ function Login() {
 
       if (response.ok) {
         console.log("Login Successful");
-        
-        // 2. Save the Security Token (CRITICAL STEP)
-        localStorage.setItem('authToken', data.token);
         
         // Optional: Save user name if provided
         if(data.user) {
@@ -45,7 +43,7 @@ function Login() {
       }
     } catch (err) {
       console.error("Network Error:", err);
-      setError('Server error. Is your backend running on port 5000?');
+      setError('Server error. Is your backend running on port 3000?');
     } finally {
       setLoading(false);
     }

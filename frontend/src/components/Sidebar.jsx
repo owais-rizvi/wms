@@ -5,7 +5,7 @@ function Sidebar(){
     // --- 1. Logic to get Name & Days Left ---
     const savedData = localStorage.getItem("activeWedding");
     // Default to "Your Wedding" if nothing is found
-    const wedding = savedData ? JSON.parse(savedData) : { names: "Your Wedding", date: "" };
+    const wedding = savedData ? JSON.parse(savedData) : { title: "Your Wedding", startDate: "" };
 
     const calculateDaysLeft = (targetDate) => {
         if (!targetDate) return 0;
@@ -16,7 +16,7 @@ function Sidebar(){
         return diffDays > 0 ? diffDays : 0;
     };
 
-    const daysLeft = calculateDaysLeft(wedding.date);
+    const daysLeft = calculateDaysLeft(wedding.startDate);
     // ----------------------------------------
 
     return(
@@ -26,7 +26,7 @@ function Sidebar(){
             {/* Minimal inline CSS just for layout/spacing of this specific part */}
             <div style={{ padding: '20px 20px 10px 20px', borderBottom: '1px solid rgba(0,0,0,0.1)', marginBottom: '10px' }}>
                 <h3 style={{ margin: '0 0 5px 0', fontSize: '1.2rem' }}>
-                    {wedding.names}
+                    {wedding.title}
                 </h3>
                 <div style={{ fontSize: '0.9rem', color: '#555' }}>
                     <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#d63384' }}>
