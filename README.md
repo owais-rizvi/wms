@@ -35,7 +35,7 @@ A full-stack web application for managing wedding planning with guest lists, eve
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/owais-rizvi/wms.git
    cd wms
    ```
 
@@ -49,7 +49,7 @@ A full-stack web application for managing wedding planning with guest lists, eve
    ```
    PORT=3000
    MONGODB_URI=mongodb://localhost:27017/wms
-   JWT_SECRET_KEY=your-secret-key
+   JWT_SECRET=your-secret-key
    ```
 
 3. **Frontend Setup**
@@ -61,7 +61,7 @@ A full-stack web application for managing wedding planning with guest lists, eve
 4. **Run the Application**
    ```bash
    # Backend (from backend directory)
-   npm start
+   npm run dev
    
    # Frontend (from frontend directory)
    npm run dev
