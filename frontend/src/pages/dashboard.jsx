@@ -12,10 +12,10 @@ function Dashboard() {
     };
 
     return (
-        <div className="page-container">
+        <div className="page-container" >
             
             {/* Stats Grid - Moved to top since Welcome section is gone */}
-            <div className="vendor-grid" style={{ marginTop: '20px' }}> 
+            <div className="vendor-grid" > 
                 <div className="summary-card">
                     <h3>Guests</h3>
                     <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>
@@ -26,7 +26,7 @@ function Dashboard() {
 
                 <div className="summary-card">
                     <h3>Budget</h3>
-                    <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>
+                    <div className="summary-value">
                         ${stats.spent.toLocaleString()}
                     </div>
                     <span>Spent of ${stats.budget.toLocaleString()}</span>
@@ -34,7 +34,7 @@ function Dashboard() {
 
                 <div className="summary-card">
                     <h3>Pending Tasks</h3>
-                    <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>
+                    <div className="summary-value">
                         {stats.tasks}
                     </div>
                     <span>To-do items</span>
@@ -42,7 +42,7 @@ function Dashboard() {
 
                 <div className="summary-card">
                     <h3>Vendors</h3>
-                    <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>
+                    <div className="summary-value">
                         {stats.vendors}
                     </div>
                     <span>Hired</span>

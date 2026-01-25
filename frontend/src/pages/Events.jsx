@@ -8,7 +8,7 @@ function Events() {
     ]);
 
     return (
-        <div className="page-container">
+        <div className="page-container" >
             <div className="page-header">
                 <h2>Event Schedule</h2>
                 <button className="btn-primary" style={{ padding: '10px 20px', background: 'black', color: 'white', border: 'none', borderRadius: '5px' }}>+ Add Event</button>

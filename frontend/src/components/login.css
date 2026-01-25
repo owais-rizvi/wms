@@ -10,7 +10,7 @@
   align-items: center;
 
   /* PASTE YOUR COPIED IMAGE LINK INSIDE THE QUOTES BELOW */
-  background-image: url('https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/7929513/hearts-background-clipart-md.png');
+  background-image: url('https://pin.it/58UzEBee3GJ2eC');
   
   /* This makes the image cover the whole screen without repeating */
   background-size: cover;
@@ -45,7 +45,7 @@
 .login-card h2 {
   font-family: 'Playfair Display', serif; /* Elegant font */
   font-size: 2rem;
-  color: #f596b0;
+  color: #7112b5;
   margin-bottom: 1.5rem;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .form-group input:focus {
-  border-color: #ff99ac; /* Pink border when clicking */
+  border-color: #7828df; /* Pink border when clicking */
   outline: none;
   box-shadow: 0 0 0 4px rgba(255, 153, 172, 0.1);
 }
@@ -85,7 +85,7 @@
   width: 100%;
   padding: 1rem;
   margin-top: 1rem;
-  background-color: #f596b0;
+  background-color: #731daf ;
   color: white;
   border: none;
   border-radius: 8px;
@@ -96,7 +96,7 @@
 }
 
 .login-btn:hover {
-  background-color: #f2acbf;
+  background-color: #e262f3;
 }
 
 .login-btn:active {

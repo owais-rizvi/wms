@@ -17,7 +17,7 @@ function Expenses() {
     ]);
 
     return (
-        <div className="page-container">
+        <div className="page-container" >
             <div className="page-header">
                 <h2>Budget Tracker</h2>
                 <div>
@@ -44,7 +44,7 @@ function Expenses() {
 
             {/* Transactions List */}
             <div className="expense-list-container" style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '20px' }}>
-                <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Transaction History</h3>
+                <h3 style={{ marginTop: 0, marginBottom: '20px'}}>Transaction History</h3>
                 
                 <table className="standard-table">
                     <thead>
