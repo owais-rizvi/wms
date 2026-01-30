@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api.js';
+import './Events.css'; // New CSS file for the modal styling
 
 function Events() {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [showForm, setShowForm] = useState(false);
+    
+    // Modal State
+    const [showModal, setShowModal] = useState(false);
+    
     const [newEvent, setNewEvent] = useState({
         title: '',
         description: '',
@@ -55,8 +59,10 @@ function Events() {
                 body: JSON.stringify(newEvent)
             });
             setEvents([...events, event]);
+            
+            // Reset and Close Modal
             setNewEvent({ title: '', description: '', date: '', time: '', location: '' });
-            setShowForm(false);
+            setShowModal(false); 
         } catch (err) {
             setError(err.message);
         }
@@ -92,106 +98,141 @@ function Events() {
         }
     };
 
-    if (loading) return <div>Loading events...</div>;
+    if (loading) return <div className="loading-state">Loading events...</div>;
 
     return (
         <div className="page-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h1>Events & Tasks ({events.filter(e => e.status === 'pending').length} pending)</h1>
+            
+            {/* --- HEADER --- */}
+            <div className="events-header">
+                <div>
+                    <h2 style={{ color: '#540c21', margin: 0 }}>Events & Tasks</h2>
+                    <p style={{ color: '#666', margin: '5px 0 0' }}>{events.filter(e => e.status === 'pending').length} tasks pending</p>
+                </div>
                 <button 
-                    onClick={() => setShowForm(!showForm)}
-                    style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px' }}
+                    className="btn-primary"
+                    onClick={() => setShowModal(true)}
                 >
-                    {showForm ? 'Cancel' : '+ Add Event'}
+                    + Add Event
                 </button>
             </div>
 
-            {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+            {error && <div className="error-message">{error}</div>}
 
-            {showForm && (
-                <form onSubmit={handleAddEvent} style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                        <input
-                            type="text"
-                            placeholder="Event Title"
-                            value={newEvent.title}
-                            onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Location"
-                            value={newEvent.location}
-                            onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
-                        />
-                        <input
-                            type="date"
-                            value={newEvent.date}
-                            onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
-                        />
-                        <input
-                            type="time"
-                            value={newEvent.time}
-                            onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
-                        />
+            {/* --- MODAL POPUP --- */}
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        
+                        <div className="modal-header">
+                            <h3>Add New Event</h3>
+                            <button className="btn-close" onClick={() => setShowModal(false)}>×</button>
+                        </div>
+
+                        <form onSubmit={handleAddEvent}>
+                            <div className="form-group">
+                                <label>Event Title</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Cake Tasting"
+                                    value={newEvent.title}
+                                    onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                                    required
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Date</label>
+                                    <input
+                                        type="date"
+                                        value={newEvent.date}
+                                        onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Time</label>
+                                    <input
+                                        type="time"
+                                        value={newEvent.time}
+                                        onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Location</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. The Grand Hotel"
+                                    value={newEvent.location}
+                                    onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Description / Notes</label>
+                                <textarea
+                                    placeholder="Any details to remember..."
+                                    value={newEvent.description}
+                                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                                    rows="3"
+                                />
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">Save Event</button>
+                            </div>
+                        </form>
                     </div>
-                    <textarea
-                        placeholder="Description (optional)"
-                        value={newEvent.description}
-                        onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                        style={{ width: '100%', padding: '10px', marginBottom: '10px', minHeight: '60px' }}
-                    />
-                    <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px' }}>
-                        Add Event
-                    </button>
-                </form>
+                </div>
             )}
 
-            <div style={{ display: 'grid', gap: '10px' }}>
-                {events.map(event => (
-                    <div key={event._id} style={{ padding: '15px', border: '1px solid #ddd', borderRadius: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <strong>{event.title}</strong>
-                                <span style={{ 
-                                    padding: '2px 8px', 
-                                    backgroundColor: event.status === 'completed' ? '#d4edda' : '#fff3cd',
-                                    color: event.status === 'completed' ? '#155724' : '#856404',
-                                    borderRadius: '12px',
-                                    fontSize: '0.8rem'
-                                }}>
-                                    {event.status === 'completed' ? 'Completed' : 'Pending'}
-                                </span>
+            {/* --- EVENTS LIST --- */}
+            <div className="events-list">
+                {events.length === 0 ? (
+                    <div className="empty-state">No events yet. Click "+ Add Event" to get started!</div>
+                ) : (
+                    events.map(event => (
+                        <div key={event._id} className={`event-card ${event.status}`}>
+                            <div className="event-info">
+                                <div className="event-title-row">
+                                    <h4 className={event.status === 'completed' ? 'text-strike' : ''}>
+                                        {event.title}
+                                    </h4>
+                                    {event.status === 'completed' && <span className="badge-completed">Done</span>}
+                                </div>
+                                
+                                <div className="event-meta">
+                                    {event.date && <span>📅 {new Date(event.date).toLocaleDateString()}</span>}
+                                    {event.time && <span>⏰ {event.time}</span>}
+                                    {event.location && <span>📍 {event.location}</span>}
+                                </div>
+                                
+                                {event.description && <p className="event-desc">{event.description}</p>}
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-                                {event.date && new Date(event.date).toLocaleDateString()} 
-                                {event.time && ` at ${event.time}`}
-                                {event.location && ` • ${event.location}`}
+
+                            <div className="event-actions">
+                                <button 
+                                    className={`btn-icon ${event.status === 'completed' ? 'btn-undo' : 'btn-check'}`}
+                                    onClick={() => toggleStatus(event._id, event.status)}
+                                    title={event.status === 'completed' ? "Mark Pending" : "Mark Done"}
+                                >
+                                    {event.status === 'completed' ? '↩' : '✓'}
+                                </button>
+                                <button 
+                                    className="btn-icon btn-delete"
+                                    onClick={() => deleteEvent(event._id)}
+                                    title="Delete"
+                                >
+                                    🗑️
+                                </button>
                             </div>
-                            {event.description && <div style={{ fontSize: '0.9rem', color: '#888', marginTop: '5px' }}>{event.description}</div>}
                         </div>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <button 
-                                onClick={() => toggleStatus(event._id, event.status)}
-                                style={{ 
-                                    padding: '5px 10px', 
-                                    backgroundColor: event.status === 'completed' ? '#ffc107' : '#28a745', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '3px' 
-                                }}
-                            >
-                                {event.status === 'completed' ? 'Mark Pending' : 'Mark Done'}
-                            </button>
-                            <button 
-                                onClick={() => deleteEvent(event._id)}
-                                style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );

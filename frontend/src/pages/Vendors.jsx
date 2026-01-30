@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api.js';
+import './Vendors.css';
 
 function Vendors() {
     const navigate = useNavigate();
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [showForm, setShowForm] = useState(false);
+    
+    // Modal State
+    const [showModal, setShowModal] = useState(false);
+    
     const [newVendor, setNewVendor] = useState({
         name: '',
         category: '',
@@ -55,8 +59,10 @@ function Vendors() {
                 body: JSON.stringify(newVendor)
             });
             setVendors([...vendors, vendor]);
+            
+            // Reset and Close Modal
             setNewVendor({ name: '', category: '', contact: '', email: '', cost: 0 });
-            setShowForm(false);
+            setShowModal(false);
         } catch (err) {
             setError(err.message);
         }
@@ -91,99 +97,150 @@ function Vendors() {
         }
     };
 
-    if (loading) return <div>Loading vendors...</div>;
+    if (loading) return <div className="loading-state">Loading vendors...</div>;
 
-    const bookedCount = vendors.filter(v => v.status === 'booked').length;
+    const bookedCount = vendors.filter(v => v.status === 'booked' || v.status === 'paid').length;
 
     return (
         <div className="page-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h1>Vendors ({bookedCount} booked)</h1>
+            
+            {/* --- HEADER --- */}
+            <div className="vendors-header">
+                <div>
+                    <h2 style={{ color: '#540c21', margin: 0 }}>Vendors</h2>
+                    <p style={{ color: '#666', margin: '5px 0 0' }}>{bookedCount} booked / {vendors.length} total</p>
+                </div>
                 <button 
-                    onClick={() => setShowForm(!showForm)}
-                    style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px' }}
+                    className="btn-primary"
+                    onClick={() => setShowModal(true)}
                 >
-                    {showForm ? 'Cancel' : '+ Add Vendor'}
+                    + Add Vendor
                 </button>
             </div>
 
-            {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+            {error && <div className="error-message">{error}</div>}
 
-            {showForm && (
-                <form onSubmit={handleAddVendor} style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                        <input
-                            type="text"
-                            placeholder="Vendor Name"
-                            value={newVendor.name}
-                            onChange={(e) => setNewVendor({...newVendor, name: e.target.value})}
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Category (e.g., Photography)"
-                            value={newVendor.category}
-                            onChange={(e) => setNewVendor({...newVendor, category: e.target.value})}
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Contact Number"
-                            value={newVendor.contact}
-                            onChange={(e) => setNewVendor({...newVendor, contact: e.target.value})}
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={newVendor.email}
-                            onChange={(e) => setNewVendor({...newVendor, email: e.target.value})}
-                        />
-                        <input
-                            type="number"
-                            placeholder="Cost"
-                            value={newVendor.cost}
-                            onChange={(e) => setNewVendor({...newVendor, cost: Number(e.target.value)})}
-                        />
+            {/* --- MODAL POPUP --- */}
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        
+                        <div className="modal-header">
+                            <h3>Add New Vendor</h3>
+                            <button className="btn-close" onClick={() => setShowModal(false)}>×</button>
+                        </div>
+
+                        <form onSubmit={handleAddVendor}>
+                            <div className="form-group">
+                                <label>Vendor Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Elegant Flowers"
+                                    value={newVendor.name}
+                                    onChange={(e) => setNewVendor({...newVendor, name: e.target.value})}
+                                    required
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Category</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Photography"
+                                        value={newVendor.category}
+                                        onChange={(e) => setNewVendor({...newVendor, category: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Estimated Cost</label>
+                                    <input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={newVendor.cost}
+                                        onChange={(e) => setNewVendor({...newVendor, cost: Number(e.target.value)})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Phone</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Contact Number"
+                                        value={newVendor.contact}
+                                        onChange={(e) => setNewVendor({...newVendor, contact: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        placeholder="vendor@example.com"
+                                        value={newVendor.email}
+                                        onChange={(e) => setNewVendor({...newVendor, email: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">Add Vendor</button>
+                            </div>
+                        </form>
                     </div>
-                    <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px' }}>
-                        Add Vendor
-                    </button>
-                </form>
+                </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '15px' }}>
-                {vendors.map(vendor => (
-                    <div key={vendor._id} style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                            <strong>{vendor.name}</strong>
-                            <span style={{ padding: '4px 8px', backgroundColor: '#e9ecef', borderRadius: '4px', fontSize: '0.8rem' }}>
-                                {vendor.category}
-                            </span>
+            {/* --- VENDORS GRID --- */}
+            <div className="vendors-grid">
+                {vendors.length === 0 ? (
+                    <div className="empty-state">No vendors added yet. Click "+ Add Vendor" to start hiring!</div>
+                ) : (
+                    vendors.map(vendor => (
+                        <div key={vendor._id} className="vendor-card">
+                            <div className="vendor-card-header">
+                                <span className="vendor-category">{vendor.category}</span>
+                                <div className={`status-dot ${vendor.status}`}></div>
+                            </div>
+                            
+                            <div className="vendor-info">
+                                <h4>{vendor.name}</h4>
+                                <div className="vendor-details">
+                                    {vendor.contact && <div className="detail-row"><span>Phone:</span> {vendor.contact}</div>}
+                                    {vendor.email && <div className="detail-row"><span>Email:</span> {vendor.email}</div>}
+                                </div>
+                                <div className="vendor-cost">
+                                    <span>Estimated Cost</span>
+                                    <strong>${vendor.cost.toLocaleString()}</strong>
+                                </div>
+                            </div>
+
+                            <div className="vendor-actions">
+                                <select 
+                                    className="status-select"
+                                    value={vendor.status} 
+                                    onChange={(e) => updateStatus(vendor._id, e.target.value)}
+                                >
+                                    <option value="contacted">Contacted</option>
+                                    <option value="booked">Booked</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                
+                                <button 
+                                    className="btn-text-delete"
+                                    onClick={() => deleteVendor(vendor._id)}
+                                >
+                                    Remove
+                                </button>
+                            </div>
                         </div>
-                        <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '15px' }}>
-                            {vendor.contact && <div>📞 {vendor.contact}</div>}
-                            {vendor.email && <div>📧 {vendor.email}</div>}
-                            <div>💰 Rs {vendor.cost}</div>
-                        </div>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <select 
-                                value={vendor.status} 
-                                onChange={(e) => updateStatus(vendor._id, e.target.value)}
-                                style={{ padding: '5px', flex: 1 }}
-                            >
-                                <option value="contacted">Contacted</option>
-                                <option value="booked">Booked</option>
-                                <option value="paid">Paid</option>
-                            </select>
-                            <button 
-                                onClick={() => deleteVendor(vendor._id)}
-                                style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );

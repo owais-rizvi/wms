@@ -1,0 +1,318 @@
+/* --- LAYOUT --- */
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.vendors-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.vendors-header h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 5px 0;
+}
+
+/* --- BUTTONS --- */
+.btn-primary {
+    background: var(--primary); /* Burgundy */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 4px 10px rgba(136, 19, 55, 0.2);
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: #f5f5f4;
+    color: #444;
+    border: 1px solid #e7e5e4;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+.btn-secondary:hover {
+    background: #e7e5e4;
+}
+
+/* --- MODAL STYLES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.btn-close:hover { 
+    color: var(--primary); 
+}
+
+/* Form Elements inside Modal */
+.form-group { 
+    margin-bottom: 18px; 
+}
+
+.form-row { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+}
+
+.modal-content label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e7e5e4;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #fafaf9;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.modal-content input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(84, 12, 33, 0.1);
+}
+
+.modal-actions {
+    margin-top: 30px;
+    text-align: right;
+}
+
+/* --- VENDORS GRID --- */
+.vendors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.vendor-card {
+    background: white;
+    border: 1px solid #e7e5e4;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.vendor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+    border-color: var(--primary-light);
+}
+
+/* Card Header */
+.vendor-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.vendor-category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: #fdf2f8; /* Light pink background */
+    padding: 6px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* Status Indicator Dot */
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.status-dot.booked { background: #16a34a; box-shadow: 0 0 0 4px #dcfce7; }
+.status-dot.paid { background: #000; box-shadow: 0 0 0 4px #e5e7eb; }
+.status-dot.contacted { background: #ca8a04; box-shadow: 0 0 0 4px #fef9c3; }
+.status-dot.pending { background: #9ca3af; box-shadow: 0 0 0 4px #f3f4f6; }
+
+/* Card Info */
+.vendor-info h4 {
+    margin: 0 0 12px 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.vendor-details {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-row {
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-row span {
+    font-weight: 600;
+    color: #333;
+    min-width: 50px;
+}
+
+.vendor-cost {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fafaf9;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.vendor-cost span {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.vendor-cost strong {
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+/* Card Actions */
+.vendor-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 12px;
+    border-top: 1px solid #f5f5f4;
+    padding-top: 16px;
+    align-items: center;
+}
+
+.status-select {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e7e5e4;
+    background: #fafaf9;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+}
+
+.status-select:hover {
+    background: white;
+    border-color: var(--primary-light);
+}
+
+.btn-text-delete {
+    background: transparent;
+    border: none;
+    font-size: 0.9rem;
+    color: #dc2626;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-weight: 500;
+}
+
+.btn-text-delete:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    color: var(--text-muted);
+    font-style: italic;
+    background: white;
+    border-radius: 16px;
+    border: 1px dashed #e7e5e4;
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

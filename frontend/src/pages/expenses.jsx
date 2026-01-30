@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api.js';
+import './Expenses.css';
 
 function Expenses() {
     const navigate = useNavigate();
@@ -114,118 +115,100 @@ function Expenses() {
         }
     };
 
-    if (loading) return <div style={{padding:'20px'}}>Loading finances...</div>;
+    if (loading) return <div className="loading-state">Loading finances...</div>;
 
     return (
         <div className="page-container">
-            {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+            {error && <div className="error-message">{error}</div>}
             
             {/* --- TOP HEADER --- */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div className="expenses-header">
                 <div>
-                    <h2>Expense Tracking</h2>
-                    <p style={{ color: '#666', margin: 0 }}>Monitor your wedding budget and expenses</p>
+                    <h2 style={{ color: '#540c21', margin: 0 }}>Expense Tracking</h2>
+                    <p style={{ color: '#666', margin: '5px 0 0' }}>Monitor your wedding budget</p>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="header-actions">
                     <button 
+                        className="btn-secondary"
                         onClick={() => { setTempBudget(budget); setShowBudgetModal(true); }}
-                        style={{ padding: '10px 20px', background: 'white', border: '1px solid #ddd', borderRadius: '5px', cursor: 'pointer' }}>
+                    >
                         Set Budget
                     </button>
                     <button 
+                        className="btn-primary"
                         onClick={() => setShowExpenseModal(true)}
-                        style={{ padding: '10px 20px', background: 'black', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                    >
                         + Add Expense
                     </button>
                 </div>
             </div>
 
             {/* --- 4 STATS CARDS --- */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
-                <div style={{ padding: '20px', borderRadius: '10px', background: 'white', border: '1px solid #eee' }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', color:'#666' }}>
-                        <span>Total Budget</span> <span>$</span>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0' }}>
-                        ₹{budget.toLocaleString()}
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Overall allocation</span>
+            <div className="stats-grid">
+                <div className="stat-card">
+                    <div className="card-label">Total Budget</div>
+                    <div className="card-value">₹{budget.toLocaleString()}</div>
+                    <div className="card-subtext">Allocated</div>
                 </div>
 
-                <div style={{ padding: '20px', borderRadius: '10px', background: 'white', border: '1px solid #eee' }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', color:'#666' }}>
-                        <span>Total Spent</span> <span>↗</span>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0' }}>
-                        ₹{totalSpent.toLocaleString()}
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: spentPercentage > 100 ? 'red' : '#666' }}>
+                <div className="stat-card">
+                    <div className="card-label">Total Spent</div>
+                    <div className="card-value">₹{totalSpent.toLocaleString()}</div>
+                    <div className={`card-subtext ${spentPercentage > 100 ? 'text-danger' : ''}`}>
                         {spentPercentage.toFixed(1)}% of budget
-                    </span>
+                    </div>
                 </div>
 
-                <div style={{ padding: '20px', borderRadius: '10px', background: 'white', border: '1px solid #eee' }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', color:'#666' }}>
-                        <span>Remaining</span> <span>↘</span>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0', color: remaining < 0 ? 'red' : 'black' }}>
+                <div className="stat-card">
+                    <div className="card-label">Remaining</div>
+                    <div className={`card-value ${remaining < 0 ? 'text-danger' : ''}`}>
                         ₹{remaining.toLocaleString()}
                     </div>
-                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Available</span>
+                    <div className="card-subtext">Available</div>
                 </div>
 
-                <div style={{ padding: '20px', borderRadius: '10px', background: 'white', border: '1px solid #eee' }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', color:'#666' }}>
-                        <span>Expenses</span> <span>#</span>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0' }}>
-                        {expenses.length}
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Total items</span>
+                <div className="stat-card">
+                    <div className="card-label">Expenses</div>
+                    <div className="card-value">{expenses.length}</div>
+                    <div className="card-subtext">Items added</div>
                 </div>
             </div>
 
             {/* --- EXPENSES LIST --- */}
-            <div style={{ background: 'white', padding: '20px', borderRadius: '10px', border: '1px solid #eee' }}>
-                <h3>Expense Overview</h3>
-                <p style={{ color: '#666', marginBottom: '20px' }}>Track spending across categories</p>
-
+            <div className="expenses-list-container">
+                <h3 className="section-title">Expense History</h3>
+                
                 {expenses.length === 0 ? (
-                    <p style={{ textAlign:'center', color:'#999' }}>No expenses added yet.</p>
+                    <div className="empty-state">No expenses added yet.</div>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <div className="expenses-list">
                         {expenses.map((expense) => {
                             const barWidth = budget > 0 ? (Number(expense.amount) / budget) * 100 : 0;
                             
                             return (
-                                <div key={expense._id} style={{ padding: '15px', border: '1px solid #f0f0f0', borderRadius: '8px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                        <div>
-                                            <span style={{ fontWeight: '500' }}>{expense.description || 'Expense'}</span>
-                                            <span style={{color:'#999', fontSize:'0.8rem', marginLeft: '10px'}}>({expense.category})</span>
+                                <div key={expense._id} className="expense-item">
+                                    <div className="expense-row-top">
+                                        <div className="expense-info">
+                                            <h4>{expense.description || 'Expense'}</h4>
+                                            <span className="expense-category">{expense.category}</span>
+                                            <span className="expense-date"> • {new Date(expense.date).toLocaleDateString()}</span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontWeight: 'bold' }}>₹{Number(expense.amount).toLocaleString()}</span>
+                                        <div className="expense-amount-row">
+                                            <span className="amount-text">₹{Number(expense.amount).toLocaleString()}</span>
                                             <button 
+                                                className="btn-text-delete"
                                                 onClick={() => deleteExpense(expense._id)}
-                                                style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                                             >
                                                 Delete
                                             </button>
                                         </div>
                                     </div>
                                     
-                                    <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '8px' }}>
-                                        Added on {new Date(expense.date).toLocaleDateString()}
-                                    </div>
-                                    
-                                    <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '4px', overflow: 'hidden' }}>
-                                        <div style={{ 
-                                            width: `${Math.min(barWidth, 100)}%`, 
-                                            height: '100%', 
-                                            background: '#007bff',
-                                            borderRadius: '4px'
-                                        }}></div>
+                                    <div className="expense-progress-track">
+                                        <div 
+                                            className="expense-progress-fill"
+                                            style={{ width: `${Math.min(barWidth, 100)}%` }}
+                                        ></div>
                                     </div>
                                 </div>
                             );
@@ -236,20 +219,26 @@ function Expenses() {
 
             {/* --- MODAL 1: SET BUDGET --- */}
             {showBudgetModal && (
-                <div style={modalStyle}>
-                    <div style={modalContentStyle}>
-                        <h3>Set Total Budget</h3>
+                <div className="modal-overlay" onClick={() => setShowBudgetModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Set Total Budget</h3>
+                            <button className="btn-close" onClick={() => setShowBudgetModal(false)}>×</button>
+                        </div>
                         <form onSubmit={handleSetBudget}>
-                            <input 
-                                type="number" 
-                                value={tempBudget}
-                                onChange={e => setTempBudget(e.target.value)}
-                                style={inputStyle}
-                                placeholder="e.g. 50000"
-                            />
-                            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                                <button type="submit" style={btnStyle}>Save Budget</button>
-                                <button type="button" onClick={() => setShowBudgetModal(false)} style={cancelBtnStyle}>Cancel</button>
+                            <div className="form-group">
+                                <label>Total Budget Amount (₹)</label>
+                                <input 
+                                    type="number" 
+                                    value={tempBudget}
+                                    onChange={e => setTempBudget(e.target.value)}
+                                    placeholder="e.g. 500000"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowBudgetModal(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">Save Budget</button>
                             </div>
                         </form>
                     </div>
@@ -258,44 +247,58 @@ function Expenses() {
 
             {/* --- MODAL 2: ADD EXPENSE --- */}
             {showExpenseModal && (
-                <div style={modalStyle}>
-                    <div style={modalContentStyle}>
-                        <h3>Add New Expense</h3>
-                        <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <input 
-                                type="text" 
-                                placeholder="Description (e.g. Venue Deposit)" 
-                                required
-                                value={newExpense.description} 
-                                onChange={e => setNewExpense({...newExpense, description: e.target.value})}
-                                style={inputStyle}
-                            />
-                            <input 
-                                type="number" 
-                                placeholder="Amount" 
-                                required
-                                value={newExpense.amount} 
-                                onChange={e => setNewExpense({...newExpense, amount: Number(e.target.value)})}
-                                style={inputStyle}
-                            />
-                            <select 
-                                value={newExpense.category} 
-                                onChange={e => setNewExpense({...newExpense, category: e.target.value})}
-                                style={inputStyle}
-                                required
-                            >
-                                <option value="">Select Category</option>
-                                <option value="Venue">Venue</option>
-                                <option value="Catering">Catering</option>
-                                <option value="Photography">Photography</option>
-                                <option value="Attire">Attire</option>
-                                <option value="Flowers">Flowers</option>
-                                <option value="Music">Music</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <button type="submit" style={btnStyle}>Add Expense</button>
-                                <button type="button" onClick={() => setShowExpenseModal(false)} style={cancelBtnStyle}>Cancel</button>
+                <div className="modal-overlay" onClick={() => setShowExpenseModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Add New Expense</h3>
+                            <button className="btn-close" onClick={() => setShowExpenseModal(false)}>×</button>
+                        </div>
+                        <form onSubmit={handleAddExpense}>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="e.g. Venue Deposit" 
+                                    required
+                                    value={newExpense.description} 
+                                    onChange={e => setNewExpense({...newExpense, description: e.target.value})}
+                                    autoFocus
+                                />
+                            </div>
+                            
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Amount (₹)</label>
+                                    <input 
+                                        type="number" 
+                                        placeholder="0.00" 
+                                        required
+                                        value={newExpense.amount} 
+                                        onChange={e => setNewExpense({...newExpense, amount: Number(e.target.value)})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Category</label>
+                                    <select 
+                                        value={newExpense.category} 
+                                        onChange={e => setNewExpense({...newExpense, category: e.target.value})}
+                                        required
+                                    >
+                                        <option value="">Select Category</option>
+                                        <option value="Venue">Venue</option>
+                                        <option value="Catering">Catering</option>
+                                        <option value="Photography">Photography</option>
+                                        <option value="Attire">Attire</option>
+                                        <option value="Flowers">Flowers</option>
+                                        <option value="Music">Music</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowExpenseModal(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">Add Expense</button>
                             </div>
                         </form>
                     </div>
@@ -304,12 +307,5 @@ function Expenses() {
         </div>
     );
 }
-
-// --- Internal CSS for Modals ---
-const modalStyle = { position: 'fixed', top:0, left:0, right:0, bottom:0, background: 'rgba(0,0,0,0.5)', display:'flex', justifyContent:'center', alignItems:'center' };
-const modalContentStyle = { background: 'white', padding: '30px', borderRadius: '10px', width: '400px' };
-const inputStyle = { width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', boxSizing: 'border-box' };
-const btnStyle = { flex: 1, padding: '10px', background: 'black', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' };
-const cancelBtnStyle = { flex: 1, padding: '10px', background: '#eee', border: 'none', borderRadius: '5px', cursor: 'pointer' };
 
 export default Expenses;

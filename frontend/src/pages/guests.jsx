@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api.js';
+import './Guests.css'; // Updated CSS file
 
 function Guests() {
     const navigate = useNavigate();
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [showForm, setShowForm] = useState(false);
+    
+    // Modal State
+    const [showModal, setShowModal] = useState(false);
+    
     const [newGuest, setNewGuest] = useState({
         name: '',
         email: '',
@@ -54,8 +58,10 @@ function Guests() {
                 body: JSON.stringify(newGuest)
             });
             setGuests([...guests, guest]);
+            
+            // Reset and Close Modal
             setNewGuest({ name: '', email: '', phone: '', plusOne: false });
-            setShowForm(false);
+            setShowModal(false);
         } catch (err) {
             setError(err.message);
         }
@@ -90,91 +96,134 @@ function Guests() {
         }
     };
 
-    if (loading) return <div>Loading guests...</div>;
+    if (loading) return <div className="loading-state">Loading guests...</div>;
 
     const confirmedCount = guests.filter(g => g.rsvpStatus === 'confirmed').length;
     const totalCount = guests.length;
 
     return (
         <div className="page-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h1>Guests ({confirmedCount}/{totalCount} confirmed)</h1>
+            
+            {/* --- HEADER --- */}
+            <div className="guests-header">
+                <div>
+                    <h2 style={{ color: '#540c21', margin: 0 }}>Guest List</h2>
+                    <p style={{ color: '#666', margin: '5px 0 0' }}>{confirmedCount} confirmed / {totalCount} invited</p>
+                </div>
                 <button 
-                    onClick={() => setShowForm(!showForm)}
-                    style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px' }}
+                    className="btn-primary" 
+                    onClick={() => setShowModal(true)}
                 >
-                    {showForm ? 'Cancel' : 'Add Guest'}
+                    + Add Guest
                 </button>
             </div>
 
-            {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+            {error && <div className="error-message">{error}</div>}
 
-            {showForm && (
-                <form onSubmit={handleAddGuest} style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                        <input
-                            type="text"
-                            placeholder="Guest Name"
-                            value={newGuest.name}
-                            onChange={(e) => setNewGuest({...newGuest, name: e.target.value})}
-                            required
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={newGuest.email}
-                            onChange={(e) => setNewGuest({...newGuest, email: e.target.value})}
-                        />
-                        <input
-                            type="tel"
-                            placeholder="Phone"
-                            value={newGuest.phone}
-                            onChange={(e) => setNewGuest({...newGuest, phone: e.target.value})}
-                        />
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={newGuest.plusOne}
-                                onChange={(e) => setNewGuest({...newGuest, plusOne: e.target.checked})}
-                            />
-                            Plus One
-                        </label>
+            {/* --- MODAL POPUP --- */}
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        
+                        <div className="modal-header">
+                            <h3>Add New Guest</h3>
+                            <button className="btn-close" onClick={() => setShowModal(false)}>×</button>
+                        </div>
+
+                        <form onSubmit={handleAddGuest}>
+                            <div className="form-group">
+                                <label>Guest Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    value={newGuest.name}
+                                    onChange={(e) => setNewGuest({...newGuest, name: e.target.value})}
+                                    required
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        placeholder="email@example.com"
+                                        value={newGuest.email}
+                                        onChange={(e) => setNewGuest({...newGuest, email: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Phone</label>
+                                    <input
+                                        type="tel"
+                                        placeholder="(555) 123-4567"
+                                        value={newGuest.phone}
+                                        onChange={(e) => setNewGuest({...newGuest, phone: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-group checkbox-group">
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={newGuest.plusOne}
+                                        onChange={(e) => setNewGuest({...newGuest, plusOne: e.target.checked})}
+                                    />
+                                    Include Plus One (+1)
+                                </label>
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">Add Guest</button>
+                            </div>
+                        </form>
                     </div>
-                    <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '5px' }}>
-                        Add Guest
-                    </button>
-                </form>
+                </div>
             )}
 
-            <div style={{ display: 'grid', gap: '10px' }}>
-                {guests.map(guest => (
-                    <div key={guest._id} style={{ padding: '15px', border: '1px solid #ddd', borderRadius: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <strong>{guest.name}</strong>
-                            {guest.plusOne && <span style={{ marginLeft: '10px', fontSize: '0.8rem', color: '#666' }}>+1</span>}
-                            <div style={{ fontSize: '0.9rem', color: '#666' }}>
-                                {guest.email} {guest.phone && `• ${guest.phone}`}
+            {/* --- GUESTS LIST --- */}
+            <div className="guest-list">
+                {guests.length === 0 ? (
+                    <div className="empty-state">No guests added yet. Click "+ Add Guest" to invite someone!</div>
+                ) : (
+                    guests.map(guest => (
+                        <div key={guest._id} className="guest-row">
+                            <div className="guest-info">
+                                <div className="guest-name-row">
+                                    <strong>{guest.name}</strong>
+                                    {guest.plusOne && <span className="badge-plus-one">+1 Guest</span>}
+                                </div>
+                                <div className="guest-contact">
+                                    {guest.email && <span>{guest.email}</span>}
+                                    {guest.email && guest.phone && <span> • </span>}
+                                    {guest.phone && <span>{guest.phone}</span>}
+                                </div>
+                            </div>
+
+                            <div className="guest-actions">
+                                <select 
+                                    className={`rsvp-select status-${guest.rsvpStatus}`}
+                                    value={guest.rsvpStatus} 
+                                    onChange={(e) => updateRSVP(guest._id, e.target.value)}
+                                >
+                                    <option value="pending">Pending</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="declined">Declined</option>
+                                </select>
+                                
+                                <button 
+                                    className="btn-text-delete"
+                                    onClick={() => deleteGuest(guest._id)}
+                                >
+                                    Remove
+                                </button>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <select 
-                                value={guest.rsvpStatus} 
-                                onChange={(e) => updateRSVP(guest._id, e.target.value)}
-                                style={{ padding: '5px' }}
-                            >
-                                <option value="pending">Pending</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="declined">Declined</option>
-                            </select>
-                            <button 
-                                onClick={() => deleteGuest(guest._id)}
-                                style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );

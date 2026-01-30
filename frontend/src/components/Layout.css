@@ -1,0 +1,266 @@
+/* --- WARM & DARK WEDDING PALETTE --- */
+:root {
+    /* The "Dark & Warm" Primary Color (Deep Burgundy) */
+    --primary: #540c21;       
+    --primary-dark: #370412;  
+    
+    /* Soft Warm Backgrounds (Linen/Cream) */
+    --primary-light: #fff1f2; /* Very pale rose wash */
+    --bg-app: #fdfaf6;        /* Warm Cream for main background */
+    
+    /* Text Colors (Warm Greys, not harsh black) */
+    --text-main: #27272a;     /* Warm Charcoal */
+    --text-muted: #78716c;    /* Warm Stone Grey */
+    
+    --sidebar-width: 340px;
+}
+
+/* --- HEADER STYLES --- */
+.Header {
+    height: 100px;
+    background: #ffffff;
+    /* Gold-ish accent line at the bottom */
+    border-bottom: 3px solid #e7e5e4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+}
+
+.Header h1 {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--primary); /* Deep Burgundy Logo */
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    letter-spacing: -0.5px;
+}
+
+.Header h1::before {
+    content: "♡"; 
+    font-size: 32px;
+    color: var(--primary);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 20px;
+    background: var(--primary-light); /* Pale Rose Bubble */
+    border-radius: 12px;
+}
+
+.user-names {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.user-role {
+    font-size: 13px;
+    color: #9f1239; /* Muted Red text */
+    font-weight: 500;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--primary); 
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    /* Warm shadow instead of blue shadow */
+    box-shadow: 0 4px 10px rgba(136, 19, 55, 0.3); 
+}
+
+
+/* --- SIDEBAR CONTAINER --- */
+.Sidebar {
+    width: var(--sidebar-width);
+    background: #ffffff;
+    padding: 32px;
+    border-right: 1px solid #e7e5e4; /* Warm grey border */
+    display: flex;
+    flex-direction: column;
+    gap: 24px; 
+    height: 100%;
+}
+
+/* --- BOX 1: WEDDING DATE --- */
+.sidebar-header {
+    background: #fff;
+    border: 2px solid #f5f5f4;
+    border-radius: 20px;
+    padding: 24px;
+    /* Warm, cozy shadow */
+    box-shadow: 0 10px 25px -5px rgba(120, 113, 108, 0.1); 
+    transition: transform 0.2s;
+}
+
+.sidebar-header:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-light);
+}
+
+.sidebar-title {
+    font-size: 13px;
+    color: var(--primary); /* Burgundy Title */
+    margin: 0 0 12px 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sidebar-date {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    line-height: 1.1;
+}
+
+.sidebar-countdown {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* --- BOX 2: MENU ITEMS (THE LIST BOX) --- */
+.sidebar-menu-box {
+    list-style: none;
+    margin: 0;
+    
+    /* THE BOX STYLES (Identical to the Top Card) */
+    background: #fff;
+    border: 2px solid #f5f5f4; /* Warm Grey Border */
+    border-radius: 20px;       /* Big Rounded Corners */
+    padding: 16px;             /* Space inside the box */
+    
+    /* Warm Shadow */
+    box-shadow: 0 10px 25px -5px rgba(120, 113, 108, 0.1); 
+    
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    /* This makes it fill the space but keeps the footer at bottom */
+    flex: 1; 
+}
+
+.Sidebar a {
+    text-decoration: none;
+    display: block;
+}
+
+/* Individual Buttons inside the Box */
+.Sidebar li {
+    padding: 16px 20px;
+    border-radius: 14px;
+    font-size: 16px;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.Sidebar li:hover {
+    background-color: var(--primary-light); /* Rose wash on hover */
+    color: var(--primary); 
+}
+
+/* Active State */
+.active-link li {
+    background-color: var(--primary) !important; /* Solid Burgundy */
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(136, 19, 55, 0.3); 
+}
+
+/* --- FOOTER (SEPARATE LINK) --- */
+.sidebar-footer {
+    margin-top: 20px; /* Space between Menu Box and Footer */
+}
+
+.switch-link {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    background: transparent; 
+}
+
+.switch-link:hover {
+    color: var(--primary);
+    background: #fff1f2; /* Light rose hover */
+}
+/* Individual Buttons */
+.Sidebar li {
+    padding: 18px 24px;
+    border-radius: 14px;
+    font-size: 17px;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.Sidebar li:hover {
+    background-color: var(--primary-light); /* Rose wash on hover */
+    color: var(--primary); /* Burgundy text on hover */
+}
+
+/* Active State */
+.active-link li {
+    background-color: var(--primary) !important; /* Solid Burgundy */
+    color: #ffffff !important;
+    /* Rich red glow */
+    box-shadow: 0 8px 20px rgba(136, 19, 55, 0.4); 
+}
+
+/* --- FOOTER (SEPARATE LINK) --- */
+.sidebar-footer {
+    margin-top: auto; 
+    padding-top: 10px;
+}
+
+.switch-link {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    background: #fafaf9; /* Warm stone background */
+    border: 1px solid transparent;
+}
+
+.switch-link:hover {
+    color: var(--primary);
+    background: white;
+    border-color: #e7e5e4;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.switch-link .icon {
+    font-size: 18px;
+    font-weight: bold;
+}
