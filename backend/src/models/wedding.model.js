@@ -14,6 +14,10 @@ const weddingSchema = new mongoose.Schema(
     startDate: Date,
     endDate: Date,
     location: String,
+    budget: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true },
 );
